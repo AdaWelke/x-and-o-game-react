@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Player from './components/Player';
 import GameBoard from './components/GameBoard';
 import Log from './components/Log';
+import GameOver from './components/GameOver';
 
 function App() {
 	const [player1, setPlayer1] = useState('Player 1');
@@ -10,7 +11,7 @@ function App() {
 	const [winner, setWinner] = useState(null);
 	// gameTurns === [{ square: { row: rowIdx, col: colIdx }, player: currentPlayer },{...}...]
 
-	const activePlayer = gameTurns[0]?.player || 'X';
+	const activePlayer = gameTurns[0]?.player === 'X' ? 'O' : 'X';
 
 	const handleSelectSquare = (rowIdx, colIdx) => {
 		setGameTurns(prevTurns => {
@@ -47,7 +48,9 @@ function App() {
 						isActive={activePlayer === 'O'}
 					/>
 				</ol>
-				{winner && <p>You won, {winner === 'X' ? player1 : player2}!</p>}
+				{winner && <GameOver winner={winner === 'X' ? player1 : player2} />}
+				{!winner && gameTurns.length === 9 && <GameOver winner='No one' />}
+
 				<GameBoard
 					turns={gameTurns}
 					handleSelectSquare={handleSelectSquare}
