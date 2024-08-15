@@ -6,12 +6,18 @@ import Log from './components/Log';
 function App() {
 	const [player1, setPlayer1] = useState('Player 1');
 	const [player2, setPlayer2] = useState('Player 2');
-	const [activePlayer, setActivePlayer] = useState('X');
 	const [gameTurns, setGameTurns] = useState([]);
+	const [winner, setWinner] = useState(null);
+	// gameTurns === [{ square: { row: rowIdx, col: colIdx }, player: currentPlayer },{...}...]
 
-	const handleSelectSquare = (activePlayer, rowIdx, colIdx) => {
-		setActivePlayer(current => (current === 'X' ? 'O' : 'X'));
-		setGameTurns([...gameTurns, [activePlayer, rowIdx, colIdx]]);
+	const activePlayer = gameTurns[0]?.player || 'X';
+
+	const handleSelectSquare = (rowIdx, colIdx) => {
+		setGameTurns(prevTurns => {
+			const currentPlayer = prevTurns[0]?.player === 'X' ? 'O' : 'X';
+
+			return [{ square: { row: rowIdx, col: colIdx }, player: currentPlayer }, ...gameTurns];
+		});
 	};
 
 	const handleNameChange = (newName, symbol) => {
@@ -21,6 +27,8 @@ function App() {
 		}
 		setPlayer2(newName);
 	};
+
+	const isTheWinner = winner => setWinner(winner);
 
 	return (
 		<main>
@@ -39,9 +47,15 @@ function App() {
 						isActive={activePlayer === 'O'}
 					/>
 				</ol>
-				<GameBoard activePlayer={activePlayer} handleSelectSquare={handleSelectSquare} />
+				{winner && <p>You won, {winner === 'X' ? player1 : player2}!</p>}
+				<GameBoard
+					turns={gameTurns}
+					handleSelectSquare={handleSelectSquare}
+					isTheWinner={isTheWinner}
+					winner={winner}
+				/>
 			</div>
-			<Log />
+			<Log turns={gameTurns} player1={player1} player2={player2} />
 		</main>
 	);
 }

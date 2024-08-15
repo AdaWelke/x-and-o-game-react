@@ -1,21 +1,35 @@
-import { useState } from 'react';
-const initialGameBoard = Array(3).fill(Array(3).fill(null));
+import { WINNING_COMBINATIONS } from '../winning-combinations';
 
-export default function GameBoard({ activePlayer, handleSelectSquare }) {
-	const [gameBoard, setGameBoard] = useState(initialGameBoard);
+const gameBoard = [
+	[null, null, null],
+	[null, null, null],
+	[null, null, null],
+];
 
-	const handleClick = (rowIdx, colIdx) => {
-		if (gameBoard[rowIdx][colIdx]) return;
+export default function GameBoard({ turns, handleSelectSquare, isTheWinner, winner }) {
+	// const [gameBoard, setGameBoard] = useState(initialGameBoard);
 
-		// const updateBoard = [...gameBoard.map(r => [...r])];
-		// updateBoard[rowIdx][colIdx] = 'X';
-		const updateBoard = gameBoard.map((r, rIdx) =>
-			rIdx === rowIdx ? gameBoard[rowIdx].map((c, cIdx) => (cIdx === colIdx ? activePlayer : c)) : r
-		);
-		setGameBoard(updateBoard);
+	// const handleClick = (rowIdx, colIdx) => {
+	// 	// const updateBoard = [...gameBoard.map(r => [...r])]; <--!!!!!!!!!!!!
+	// 	// updateBoard[rowIdx][colIdx] = 'X';
+	// 	const updateBoard = gameBoard.map((r, rIdx) =>
+	// 		rIdx === rowIdx ? gameBoard[rowIdx].map((c, cIdx) => (cIdx === colIdx ? activePlayer : c)) : r
+	// 	);
+	// 	setGameBoard(updateBoard);
+	// };
 
-		handleSelectSquare(activePlayer, rowIdx, colIdx);
-	};
+	turns.forEach(({ square: { row, col }, player: playerSymbol }) => {
+		gameBoard[row][col] = playerSymbol;
+	});
+
+	for (const combination of WINNING_COMBINATIONS) {
+		const firstSquareSymbol = gameBoard[combination[0].row][combination[0].column];
+		const secondSquareSymbol = gameBoard[combination[1].row][combination[1].column];
+		const thirdSquareSymbol = gameBoard[combination[2].row][combination[2].column];
+		if (firstSquareSymbol && firstSquareSymbol === secondSquareSymbol && firstSquareSymbol === thirdSquareSymbol) {
+			isTheWinner(firstSquareSymbol);
+		}
+	}
 
 	return (
 		<ol id='game-board'>
@@ -23,10 +37,12 @@ export default function GameBoard({ activePlayer, handleSelectSquare }) {
 				return (
 					<li key={rowIdx}>
 						<ol>
-							{row.map((col, colIdx) => {
+							{row.map((playerSymbol, colIdx) => {
 								return (
 									<li key={colIdx}>
-										<button onClick={() => handleClick(rowIdx, colIdx)}>{col}</button>
+										<button onClick={() => handleSelectSquare(rowIdx, colIdx)} disabled={winner || playerSymbol}>
+											{playerSymbol}
+										</button>
 									</li>
 								);
 							})}
