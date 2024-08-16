@@ -7,6 +7,7 @@ import GameOver from './components/GameOver';
 function App() {
 	const [player1, setPlayer1] = useState('Player 1');
 	const [player2, setPlayer2] = useState('Player 2');
+
 	const [game, setGame] = useState({ gameTurns: [], winnerSymbol: null });
 	// gameTurns === [{ square: { row: rowIdx, col: colIdx }, player: currentPlayer },{...}...]
 
