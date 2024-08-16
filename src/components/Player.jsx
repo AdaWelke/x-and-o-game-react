@@ -5,7 +5,7 @@ export default function Player({ initialName, symbol, onChange, isActive }) {
 	const [isEditing, setIsEditing] = useState(false);
 
 	const handleSave = () => {
-		if (isEditing) {
+		if (isEditing && playerName) {
 			onChange(playerName, symbol);
 		}
 		setIsEditing(current => !current);

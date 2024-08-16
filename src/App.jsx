@@ -4,11 +4,13 @@ import GameBoard from './components/GameBoard';
 import Log from './components/Log';
 import GameOver from './components/GameOver';
 
+const PLAYERS = {
+	X: 'Player 1',
+	O: 'Player 2',
+};
+
 function App() {
-	const [players, setPlayers] = useState({
-		X: 'Player 1',
-		O: 'Player 2',
-	});
+	const [players, setPlayers] = useState(PLAYERS);
 	const [game, setGame] = useState({ gameTurns: [], winner: null });
 	// gameTurns === [{ square: { row: rowIdx, col: colIdx }, player: currentPlayer },{...}...]
 

@@ -1,29 +1,41 @@
 import { useEffect } from 'react';
 import { WINNING_COMBINATIONS } from '../winning-combinations';
 
-export default function GameBoard({ turns, onSelect, onWin, winner }) {
-	const gameBoard = [
-		[null, null, null],
-		[null, null, null],
-		[null, null, null],
-	];
+const INITIAL_GAME_BOARD = [
+	[null, null, null],
+	[null, null, null],
+	[null, null, null],
+];
+
+const deriveGameBoard = turns => {
+	const gameBoard = [...INITIAL_GAME_BOARD.map(row => [...row])];
 
 	turns.forEach(({ square: { row, col }, player: playerSymbol }) => {
 		gameBoard[row][col] = playerSymbol;
 	});
 
+	return gameBoard;
+};
+
+const deriveWinner = (gameBoard, action) => {
+	for (const combination of WINNING_COMBINATIONS) {
+		const firstSquareSymbol = gameBoard[combination[0].row][combination[0].column];
+		const secondSquareSymbol = gameBoard[combination[1].row][combination[1].column];
+		const thirdSquareSymbol = gameBoard[combination[2].row][combination[2].column];
+
+		if (firstSquareSymbol && firstSquareSymbol === secondSquareSymbol && firstSquareSymbol === thirdSquareSymbol) {
+			action(firstSquareSymbol);
+			break;
+		}
+	}
+};
+
+export default function GameBoard({ turns, onSelect, onWin, winner }) {
+	const gameBoard = deriveGameBoard(turns);
+
 	useEffect(() => {
 		if (!winner) {
-			for (const combination of WINNING_COMBINATIONS) {
-				const firstSquareSymbol = gameBoard[combination[0].row][combination[0].column];
-				const secondSquareSymbol = gameBoard[combination[1].row][combination[1].column];
-				const thirdSquareSymbol = gameBoard[combination[2].row][combination[2].column];
-
-				if (firstSquareSymbol && firstSquareSymbol === secondSquareSymbol && firstSquareSymbol === thirdSquareSymbol) {
-					onWin(firstSquareSymbol);
-					break;
-				}
-			}
+			deriveWinner(gameBoard, onWin);
 		}
 	}, [gameBoard]);
 
